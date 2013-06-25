@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0062)http://www.ee.columbia.edu/~dpwe/resources/matlab/mp3read.html -->
+<HTML><HEAD><TITLE>mp3read for Matlab</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="MSHTML 6.00.2900.2627" name=GENERATOR>
+<META content="Dan Ellis <dpwe@ee.columbia.edu>" name=Author>
+<META 
+content="Describes and links to code for synchronous overlap add at fixed synthesis rate (SOLAFS) time scale modification in Matlab." 
+name=Description>
+<META content="matlab, audio, mp3, mpeg audio" name=KeyWords></HEAD>
+<BODY text=#000000 vLink=#551a8b aLink=#0000ff link=#0000ff bgColor=#ffffff><A 
+href="http://www.ee.columbia.edu/~dpwe/">Dan Ellis</A> : <A 
+href="http://www.ee.columbia.edu/~dpwe/resources/">Resources</A> : <A 
+href="http://www.ee.columbia.edu/~dpwe/resources/matlab/">Matlab</A> : 
+<H1>mp3read for Matlab 
+<HR width="100%">
+</H1>
+<H2>Introduction</H2>
+<P>This is an m-file I wrote to read mp3 audio files (i.e. files compressed 
+using MPEG-Audio layer 3 encoding) into Matlab. The script started out little, 
+but has now become somewhat larger. Rather than actually decoding the mp3 
+stream, it cheats by calling an external mp3 decoder program to convert the file 
+to wav, then reading in that temporary file. But it does do some tricks like 
+only decompressing the part of the file that is required rather than the whole 
+thing; this can be useful for accessing very large mp3 files. </P>
+<P>Although it's called mp3read, it will, in fact, read any MPEG Audio file 
+recognized by the underlying Unix utilities. </P>
+<P>The function actually uses two freely available Unix utilities. As such, it 
+works principally on Unix versions of Matlab (e.g. Linux and Mac OS X). However, 
+these utilities have been ported to Windows, so you should be able to get it to 
+work there also (more details at the bottom of the page). </P>
+<P>Specifically, you need the mpg123 decoder (note: mpg321 is <B>not</B> an 
+adequate substitute, because it lacks certain options), and the mp3info scanner. 
+You can find them here: </P>
+<UL>
+  <LI><A 
+  href="http://rpmfind.net/linux/RPM/redhat/6.2/i386/mpg123-0.59r-4.i386.html">mpg123-0.59r-4.i386.rpm</A>. 
+  The <A href="http://www.mpg123.de/">mpg123 project home page</A> includes 
+  notes on Windows porting. (Don't worry about the warning concerning the buffer 
+  overflow security hole in mpg123 - that would only be a risk if you set up 
+  mpg123 as the default player for mp3 files downloaded from the web, which you 
+  wouldn't want to do.) 
+  <LI><A href="http://www.ibiblio.org/mp3info/">MP3Info</A> (includes link to 
+  rpm and Windows binary) </LI></UL>
+<P>The syntax of mp3read() attempts to duplicate wavread() as closely as 
+possible, including trying to duplicate the OPTS.fmt fields and the 'size' 
+syntax etc. Because mpg123 supports on-the-fly downsampling by 2 or 4, and 
+conversion to mono, these are supported as options beyond the first two 
+arguments. </P>
+<P>Here is the function: <A 
+href="http://www.ee.columbia.edu/~dpwe/resources/matlab/mp3read.m">mp3read.m</A> 
+</P>
+<P>Here are some examples of use: </P>
+<UL>
+  <LI><TT>[d,sr] = mp3read('file.mp3');</TT> reads the whole file into d and 
+  sets sr to the sampling rate. 
+  <LI><TT>[d,sr] = mp3read('file.mp3', [n1 n2], 1, 4);</TT> forces the data to 
+  be mono, downsamples by a factor of 4, and returns only the frames between 
+  index n1 and n2. Note: n1 and n2 refer to the samples <I>after</I> the 
+  downsampling-by-4, so there will be (n2-n1+1) samples returned. The routine 
+  tries hard to decode the minimum amount of the file, so this works efficiently 
+  even for very long mp3 files. 
+  <LI><TT>[x,sr,nb,opt] = mp3read('file.mp3', 'size');</TT> x is returned as a 
+  two element vector made up of the number of samples in the file (again, after 
+  any downsampling) and the number of channels (which is always 1 if the 
+  forcemono flag is set). sr is the sampling rate (after downsampling). nb, the 
+  number of bits per sample, is always 16. opt.fmt is a cell array containing 
+  all the information read by mp3info (mpeg layer, bitrate, emphasis, stereo 
+  mode, etc.) </LI></UL>
+<H3>Using under Windows</H3>
+<P>As mentioned above, the mp3read Matlab function depends on two external 
+programs, mpg123 and mp3info, which were originally developed for Linux. To make 
+the script work on a Windows system, you need versions of these programs that 
+work on that architecture. Keansub Lee had made these available at: </P>
+<P><A 
+href="http://www.columbia.edu/~kl2074/mp3codec/">http://www.columbia.edu/~kl2074/mp3codec/</A> 
+</P>
+<P>To make them work, you also need to make small changes to the mp3read.m 
+script. First, you must change the location that the script looks for binaries 
+e.g. change the lines: </P><TT><PRE>    %%%%%% Location of the binaries
+    mpg123 = '/usr/bin/mpg123';
+    mp3info = '/usr/bin/mp3info';
+</PRE></TT>
+<P>to point to the directory where you put the binaries above, e.g. </P><TT><PRE>    mpg123 = 'C:\Matlab6p5\work\project\mpg123.exe';
+    mp3info = 'C:\Matlab6p5\work\project\mp3info.exe';
+</PRE></TT>
+<P>Secondly, you must also change the directory where temporary files are 
+written, as set up around line 119:</P><TT><PRE>    % Temporary file to use
+    tmpfile = ['/tmp/tmp',num2str(round(1000*rand(1))),'.wav'];
+</PRE></TT>
+<P>.. to be a suitable directory for temporary files on your system, 
+e.g.</P><TT><PRE>    tmpfile = ['C:\Matlab6p5\work\project\tmp',num2str(round(1000*rand(1))),'.wav'];
+</PRE></TT>
+<P>There is a third change required for operation on a plain Windows system. 
+Around line 150, the code:</P><TT><PRE>  % Delete tmp file
+  mysystem(['rm ', tmpfile]);
+</PRE></TT>
+<P>becomes </P><TT><PRE>  % Delete tmp file
+  mysystem(['<B>del</B> ', tmpfile]);
+</PRE></TT>
+<P>Thanks to Keansub Lee and Meredith Morris for their help.</P>
+<HR align=left>
+
+<ADDRESS>Last updated: $Date: 2005/04/27 13:58:20 $</ADDRESS><BR><A 
+href="http://www.ee.columbia.edu/~dpwe/">Dan Ellis</A> &lt;<A 
+href="mailto:dpwe@ee.columbia.edu">dpwe@ee.columbia.edu</A>&gt; <BR>&nbsp; 
+</BODY></HTML>
