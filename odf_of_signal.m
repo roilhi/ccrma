@@ -86,8 +86,10 @@ function [wideband_odf, ODF_sample_rate, subband_odfs, ODF_start_seconds] = odf_
       subband_odfs = spectral_subband_odfs(rectified_spectrum, subband_ranges, analysis_sample_rate);
       size(subband_odfs)
       if plotting
-	plot_subbands(subband_odfs, plot_region);
+	    plot_subbands(subband_odfs, plot_region);
       end
+    else
+      subband_odfs = [];
     end
 
     % Plotting
