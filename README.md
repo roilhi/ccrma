@@ -7,6 +7,10 @@ In your home directory, simply type to following to obtain a copy of the reposit
 
     git clone https://github.com/stevetjoa/ccrma.git
 
+To receive updates to the repository, from your `ccrma` repository directory:
+
+    git pull
+
 
 Lab 2
 =====
@@ -17,10 +21,9 @@ SECTION 1 SEGMENTING INTO EVERY N ms FRAMES
 -------------------------------------------
 
 Segmenting: Chopping up into frames every N seconds
-Previously, we've either chopped up a signal by the location of it's onsets (and taking the 
-following 100 ms) or just analyzing the entire file. 
-Analyzing the audio file by "frames" is another technique for your arsenal that is good for 
-analyzing entire songs, phrases, or non-onset-based audio examples.
+
+Previously, we've either chopped up a signal by the location of it's onsets (and taking the following 100 ms) or just analyzing the entire file. 
+Analyzing the audio file by "frames" is another technique for your arsenal that is good for analyzing entire songs, phrases, or non-onset-based audio examples.
 You easily chop up the audio into frames every, say, 100ms, with a for loop. 
 
     frameSize = 0.100 * fs; % 100ms
@@ -85,9 +88,9 @@ EXAMPLE
 
 Let's say we have 10-fold cross validation...
 
-a. Divide test set into 10 random subsets.
-b. 1 test set is tested using the classifier trained on the remaining 9.
-c. We then do test/train on all of the other sets and average the percentages. 
+1. Divide test set into 10 random subsets.
+2. 1 test set is tested using the classifier trained on the remaining 9.
+3. We then do test/train on all of the other sets and average the percentages. 
 
 To achieve the first step (divide our training set into k disjoint subsets), use the function crossvalind.m (posted in the Utilities)
 
