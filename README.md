@@ -24,9 +24,13 @@ We'll first need to setup some additional Matlab folders, toolboxes, and scripts
 Directory
 ---------
 
-Course related code, toolboxes, and audio are stored at: /usr/ccrma/courses/mir2013
+Course related code, toolboxes, and audio are stored at: 
+
+    /usr/ccrma/courses/mir2013
  
-A large collection of audio files for your experimentation are located at  /usr/ccrma/courses/mir2013/audio
+A large collection of audio files for your experimentation are located at  
+
+    /usr/ccrma/courses/mir2013/audio
 
 Matlab Setup
 ------------
@@ -47,21 +51,21 @@ You can easily comment and uncomment code by hitting Cntr-R,  Cntrl-T.
 To read MP3 files into Matlab, we have a function called `mp3read`.  It is used just like `wavread`. 
 
  
-Section 1
----------
+Section 1: Segmentation and Zero-Crossing Rate
+----------------------------------------------
 
 Purpose: We'll experiment with the different features for known frames and see if we can build a basic understanding of what they are doing.  
   
 1.  Make sure to save all of your development code in an .m file.  You can build upon and reuse much of this code over the workshop.  To create a new .m file, choose:
 
-    * File > New > Script...
-    * Save the file as Lab1.m
+        * File > New > Script...
+        * Save the file as Lab1.m
 
-    You can execute the code in Lab1.m  via any of the below options:
+    You can execute the code in `Lab1.m` via any of the below options:
 
-    * Type Lab1.m in the command window
-    * press F5 in the Editor to execute the current selected script.
-    * You can execute 1 or more commands selected in the Editor window at a time.  Select the code and press F9.  Note the Command Window will update. 
+        * Type Lab1.m in the command window
+        * press F5 in the Editor to execute the current selected script.
+        * You can execute 1 or more commands selected in the Editor window at a time.  Select the code and press F9.  Note the Command Window will update. 
 
 2.  Tab Completion. 
 
@@ -127,6 +131,7 @@ Purpose: We'll experiment with the different features for known frames and see i
     As we learned in lecture, it's common to chop up the audio into fixed-frames.  These frames are then further analyzed, processed, or feature extracted.  We're going to analyze the audio in 100 ms frames starting at each onset. 
 
 12. Create a loop which carves up the audio in fixed-size frames (100ms), starting at the onsets.
+
 13. Inside of your loop, plot each frame, and play the audio for each frame. 
 
         % Loop to carve up audio into onset-based frames
@@ -168,140 +173,145 @@ Purpose: We'll experiment with the different features for known frames and see i
             sound(frames{index(i)},fs)
             figure(1); plot(frames{index(i)});title(i);
             pause(0.5)
-        End
+        end
 
     You'll notice how trivial this drum loop is - always use familiar and predictable audio files when you're developing your algorithms. 
 
 17. Now that you have this file loading, playing , and sorting working, try this with out files, such as:
-/usr/ccrma/courses/mir2013/audio/CongaGroove-mono.wav, and /usr/ccrma/courses/mir2013/audio/ 125BOUNC-mono.WAV.
+
+        /usr/ccrma/courses/mir2013/audio/CongaGroove-mono.wav
+        /usr/ccrma/courses/mir2013/audio/125BOUNC-mono.WAV
 
 
-SECTION 2 - Spectral Features & k-NN
+Section 2: Spectral Features & k-NN
 ------------------------------------
 
-PURPOSE
 My first audio classifier: introducing K-NN!  We can now appreciate why we need additional intelligence in our systems - heuristics can't very far in the world of complex audio signals.  We'll be using Netlab's implementation of the k-NN for our work here.  It proves be a straight-forward and easy to use implementation.  The steps and skills of working with one classifier will scale nicely to working with other, more complex classifiers. 
 
 We're also going to be using the new features in our arsenal: cherishing those "spectral moments" (centroid, bandwidth, skewness, kurtosis) and also examining other spectral statistics. 
  
-TRAINING DATA
+### TRAINING DATA
+
 First off, we want to analyze and feature extract a small collection of audio samples - storing their feature data as our "training data".  The below commands read all of the .wav files in a directory into a structure, snareFileList.  
 
-1.       Use these commands to read in a list of filenames (samples) in a directory, replacing the path with the actual directory that the audio \ drum samples are stored in.
+1.  Use these commands to read in a list of filenames (samples) in a directory, replacing the path with the actual directory that the audio \ drum samples are stored in.
 
-snareDirectory = ['/usr/ccrma/courses/mir2013/audio/drum samples/snares/'];
-snareFileList = getFileNames(snareDirectory ,'wav')
+        snareDirectory = ['/usr/ccrma/courses/mir2013/audio/drum samples/snares/'];
+        snareFileList = getFileNames(snareDirectory ,'wav')
 
-kickDirectory = ['/usr/ccrma/courses/mir2013/audio/drum samples/kicks/'];
-kickFileList = getFileNames(kickDirectory ,'wav')
+        kickDirectory = ['/usr/ccrma/courses/mir2013/audio/drum samples/kicks/'];
+        kickFileList = getFileNames(kickDirectory ,'wav')
+
+2.  To access the filenames contained in the cell array, use the brackets { }  to get to the element that you want to access. 
+
+    For example, to access the text file name of the 1st file in the list, you would type:
+
+        snareFileList{1}
+
+    When we feature extract a sample collection, we need to sequentially access audio files, segment them (or not), and feature extract them.  Loading a lot of audio files into memory is not always a feasible or desirable operation, so you will create a loop which loads an audio file, feature extracts it, and closes  the audio file.  Note that the only information that we retain in memory are the features that are extracted.
+
+3.  Create a loop which reads in an audio file, extracts the zero crossing rate, and some spectral statistics.  The feature information for each audio file (the "feature vector") should be stored as a feature array, with columns being the features and rows for each file. 
  
-2.       To access the filenames contained in the cell array, use the brackets { }  to get to the element that you want to access. 
+    Or in Matlab, for example:
 
-For example, to access the text file name of the 1st file in the list, you would type  snareFileList{1}
-Try it out:
-snareFileList{1}
+        featuresSnare =
 
-When we feature extract a sample collection, we need to sequentially access audio files, segment them (or not), and feature extract them.  Loading a lot of audio files into memory is not always a feasible or desirable operation, so you will create a loop which loads an audio file, feature extracts it, and closes  the audio file.  Note that the only information that we retain in memory are the features that are extracted.
-
-3.       Create a loop which reads in an audio file, extracts the zero crossing rate, and some spectral statistics.  The feature information for each audio file (the "feature vector") should be stored as a feature array, with columns being the features and rows for each file. 
+            1.0e+003 *
+             
+             0.5730    1.9183    2.9713    0.0004 0.0002
+             0.4750    1.4834    2.4463    0.0004  0.0012
+             0.5900    2.2857    3.1788    0.0003  0.0041
+             0.5090    1.6622    2.6369    0.0004  0.0051
+             0.4860    1.4758    2.2085    0.0004  0.0021
+             0.6060    2.2119    3.2798    0.0004  0.0651
+             0.4990    2.0607    2.7654    0.0004  0.0721
+             0.6360    2.3153    3.0256    0.0003  0.0221
+             0.5490    2.0137    3.0342    0.0004  0.0016
+             0.5900    2.2857    3.1788    0.0003  0.0012
  
-Or in Matlab, for example:
-featuresSnare =
+    In your loop, here's how to read in your wav files, using a structure of file names:
+      [x,fs]=wavread([snareDirectory snareFileList{i}]);     %note the use of brackets for snareFileList
+       
+    Here's an example of how to feature extract for the current audio file..
+    frameSize = 0.100 * fs;   % 100ms
+    currentFrame = x(1:frameSize)
+    featuresSnare(i,1)   = zcr(currentFrame);
+    [centroid, bandwidth, skew, kurtosis]=spectralMoments(currentFrame,fs,8192)
+               featuresSnare(i,2:5) = [centroid, bandwidth, skew, kurtosis];
+                    
+4.  First, extract all of the feature data for the kick drums and store it in a feature array.  (For my example, above, I'd put it in "featuresKick")
 
-1.0e+003 *
- 
- 0.5730    1.9183    2.9713    0.0004 0.0002
- 0.4750    1.4834    2.4463    0.0004  0.0012
- 0.5900    2.2857    3.1788    0.0003  0.0041
- 0.5090    1.6622    2.6369    0.0004  0.0051
- 0.4860    1.4758    2.2085    0.0004  0.0021
- 0.6060    2.2119    3.2798    0.0004  0.0651
- 0.4990    2.0607    2.7654    0.0004  0.0721
- 0.6360    2.3153    3.0256    0.0003  0.0221
- 0.5490    2.0137    3.0342    0.0004  0.0016
- 0.5900    2.2857    3.1788    0.0003  0.0012
-  
-In your loop, here's how to read in your wav files, using a structure of file names:
-  [x,fs]=wavread([snareDirectory snareFileList{i}]);     %note the use of brackets for snareFileList
-   
-Here's an example of how to feature extract for the current audio file..
-frameSize = 0.100 * fs;   % 100ms
-currentFrame = x(1:frameSize)
-featuresSnare(i,1)   = zcr(currentFrame);
-[centroid, bandwidth, skew, kurtosis]=spectralMoments(currentFrame,fs,8192)
-           featuresSnare(i,2:5) = [centroid, bandwidth, skew, kurtosis];
-                
-4.       First, extract all of the feature data for the kick drums and store it in a feature array.  (For my example, above, I'd put it in "featuresKick")
-5.       Next, extract all of the feature data for the snares, storing them in a different array. 
+5.  Next, extract all of the feature data for the snares, storing them in a different array. 
 Again, the kick and snare features should be separated in two different arrays!
  
-OK, no more help.  The rest is up to you! 
+    OK, no more help.  The rest is up to you! 
 
-BUILDING MODELS
-Building Models
-1.       Examine the feature array for the various snare samples.  What do you notice? 
+### Building Models
 
-2.       Since the features are different scales, we will want to normalize each feature vector to a common range - storing the scaling coefficients for later use.  Many techniques exist for scaling your features.  We'll use linear scaling, which forces the features into the range -1 to 1.
+1.  Examine the feature array for the various snare samples.  What do you notice? 
 
-For this, we'll use a custom-created function called scale.  Scale returns an array of scaled values, as well as the multiplication and subtraction values which were used to conform each column into -1 to 1.  Use this function in your code. 
- 
-[trainingFeatures,mf,sf]=scale([featuresSnare; featuresKick]);
+2.  Since the features are different scales, we will want to normalize each feature vector to a common range - storing the scaling coefficients for later use.  Many techniques exist for scaling your features.  We'll use linear scaling, which forces the features into the range -1 to 1.
 
-Building a k-NN
-3.       Build a k-NN model for the snare drums in Netlab, using the function knn. 
-
-We'll the implementation of from the Matlab toolbox "netlab":
->help knn
-NET = KNN(NIN, NOUT, K, TR_IN, TR_TARGETS) creates a KNN model NET
-with input dimension NIN, output dimension NOUT and K neighbours.
-The training data is also stored in the data structure and the
-targets are assumed to be using a 1-of-N coding.
-
-The fields in NET are
-type = 'knn'
-nin = number of inputs
-nout = number of outputs
-tr_in = training input data
-tr_targets = training target data
-
-Here's an example...
- 
-    labels=[[ones(10,1) zeros(10,1)]; [zeros(10,1) ones(10,1) ]];
-
-Which is an array of ones and zeros to correspond to the 10 snares and 10 kicks in our training sample set:
-
-    labels=
-        1     0
-        1     0
-        1     0
-        1     0
-        1     0
-        1     0
-        1     0
-        1     0
-        1     0
-        1     0
-        0     1
-        0     1
-        0     1
-        0     1
-        0     1
-        0     1
-        0     1
-        0     1
-        0     1
-        0     1
-                       
-    [trainingFeatures,mf,sf]=scale([featuresSnare; featuresKick]);
-
-    model_snare = knn(5,2,1,trainingFeatures,labels);        
+    For this, we'll use a custom-created function called scale.  Scale returns an array of scaled values, as well as the multiplication and subtraction values which were used to conform each column into -1 to 1.  Use this function in your code. 
      
-This k-NN model uses 5 features,  2 classes for output (the label), uses k-NN = 1, and takes in the feature data via a feature array called trainingFeatures.
+        [trainingFeatures,mf,sf]=scale([featuresSnare; featuresKick]);
 
-These labels indicate which sample in our feature data is a snare, vs. a non-snare.  The k-NN model uses this information to build a means of comparison and classification.  It is really important that you get these labels correct - because they are the crux of all future classifications that are made later on.  (Trust me, I've made many mistakes in this area - training models with incorrect label data.)
+3.  Build a k-NN model for the snare drums in Netlab, using the function knn. 
 
+    We'll the implementation of from the Matlab toolbox "netlab":
 
-4.       Create a script which extracts features for a single file, re-scales its feature values, and evaluates them with your kNN classifier. 
+        >help knn
+        NET = KNN(NIN, NOUT, K, TR_IN, TR_TARGETS) creates a KNN model NET
+        with input dimension NIN, output dimension NOUT and K neighbours.
+        The training data is also stored in the data structure and the
+        targets are assumed to be using a 1-of-N coding.
+
+    The fields in NET are
+
+        type = 'knn'
+        nin = number of inputs
+        nout = number of outputs
+        tr_in = training input data
+        tr_targets = training target data
+
+    Here's an example...
+     
+        labels=[[ones(10,1) zeros(10,1)]; [zeros(10,1) ones(10,1) ]];
+
+    Which is an array of ones and zeros to correspond to the 10 snares and 10 kicks in our training sample set:
+
+        labels=
+            1     0
+            1     0
+            1     0
+            1     0
+            1     0
+            1     0
+            1     0
+            1     0
+            1     0
+            1     0
+            0     1
+            0     1
+            0     1
+            0     1
+            0     1
+            0     1
+            0     1
+            0     1
+            0     1
+            0     1
+                           
+        [trainingFeatures,mf,sf]=scale([featuresSnare; featuresKick]);
+
+        model_snare = knn(5,2,1,trainingFeatures,labels);        
+         
+    This k-NN model uses 5 features,  2 classes for output (the label), uses k-NN = 1, and takes in the feature data via a feature array called trainingFeatures.
+
+    These labels indicate which sample in our feature data is a snare, vs. a non-snare.  The k-NN model uses this information to build a means of comparison and classification.  It is really important that you get these labels correct - because they are the crux of all future classifications that are made later on.  (Trust me, I've made many mistakes in this area - training models with incorrect label data.)
+
+4.  Create a script which extracts features for a single file, re-scales its feature values, and evaluates them with your kNN classifier. 
+
 Evaluating samples with your k-NN
 Now that the hard part is done, it's time to throw some feature data through the trained k-NN and see what it outputs. 
  
