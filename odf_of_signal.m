@@ -1,4 +1,4 @@
-function [wideband_odf, ODF_sample_rate, subband_odfs, odf_downsampled_signal] = odf_of_signal(audio_signal, original_sample_rate, subband_ranges)
+function [wideband_odf, ODF_sample_rate, subband_odfs, ODF_start_seconds] = odf_of_signal(audio_signal, original_sample_rate, subband_ranges)
 %odf_of_signal - Returns the onset detection function, given an audio signal sampled at original_sample_rate
 % Sums the spectrum over given subbands.
 %
@@ -13,7 +13,7 @@ function [wideband_odf, ODF_sample_rate, subband_odfs, odf_downsampled_signal] =
 % just return the spectral centroid alone. Should test on some synthesized broadband
 % sounds, i.e a synth sound with known F0.
     
-    plotting = true;
+    plotting = false;
 
     % The sample rate of the downsampled signal.
     analysis_sample_rate = 11025.0; % In Hertz.
@@ -40,18 +40,11 @@ function [wideband_odf, ODF_sample_rate, subband_odfs, odf_downsampled_signal] =
     mono_audio_signal = sum(audio_signal, 2) / num_audio_channels;
     downsampled_signal = resample(mono_audio_signal, analysis_sample_rate, original_sample_rate);
     % Produce a audio signal downsampled to the ODF sample rate.
-    odf_downsampled_signal = resample(mono_audio_signal, round(ODF_sample_rate), original_sample_rate);
+    % odf_downsampled_signal = resample(mono_audio_signal, round(ODF_sample_rate), original_sample_rate);
 
     % The spectrum calculation will compute with a hop that produces the ODF_sample_rate.
     spectrum = spectrum_of_signal([zeros(window_size, 1); downsampled_signal], window_size, hop_size);
     
-    % Since the energy is calculated over the entire window, the first ODF sample is
-    % computed from the window centered over the audio sample half the window length.
-    % TODO however, it seems like a full window is consumed, but why?
-    % ODF_start_seconds = window_size / (2 * analysis_sample_rate);
-    ODF_start_seconds = window_size / analysis_sample_rate;
-    ODF_start_padding = ODF_start_seconds * ODF_sample_rate
-
     % Remove the DC component (0th coefficient) when computing the spectral energy flux.
     spectrum(1,:) = 0;
 
@@ -63,6 +56,9 @@ function [wideband_odf, ODF_sample_rate, subband_odfs, odf_downsampled_signal] =
     % filtered_spectrum = filter_spectrum(threshold_spectral_energy(spectrum));
     % filtered_spectrum = spectrum; % postpone the filtering for now.
     filtered_spectrum = filter_spectrum(spectrum);
+
+    % The filter delay (known to be 5 unit delays). Compute the compensation.
+    ODF_start_seconds = 5 / ODF_sample_rate;
 
     % High pass filter using a simple first order differentiator.
     spectrum_derivative = diff(filtered_spectrum, 1, 2);
@@ -90,8 +86,10 @@ function [wideband_odf, ODF_sample_rate, subband_odfs, odf_downsampled_signal] =
       subband_odfs = spectral_subband_odfs(rectified_spectrum, subband_ranges, analysis_sample_rate);
       size(subband_odfs)
       if plotting
-	plot_subbands(subband_odfs, plot_region);
+	    plot_subbands(subband_odfs, plot_region);
       end
+    else
+      subband_odfs = [];
     end
 
     % Plotting
@@ -110,4 +108,3 @@ function [wideband_odf, ODF_sample_rate, subband_odfs, odf_downsampled_signal] =
         axis([plot_region(1) plot_region(end) min(centroid)-1 max(centroid)+1]);
     end
 end
-

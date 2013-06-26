@@ -1,0 +1,56 @@
+
+[x,fs] = wavread('speech');
+xmat = buffer(x,320,160);
+% windowing after buffer
+winmat = hanning(320)*ones(1,size(xmat,2));
+xmat = xmat.*winmat;
+% lpc (columnwise)
+[A,E] = lpc(xmat,16);
+
+% lpc specgram
+S = zeros(size(A,1),512);
+for i = 1:size(A,1),
+S(i,:) = freqz(E(i,:),A(i,:),512)';
+end
+
+figure
+imagesc(log(abs(S')))
+axis xy
+figure
+specgram(x)
+
+if 0,
+% f0 Hz pulse train excitation
+f0 = 200;
+theta = 2*pi*f0/fs*([1:fs/200/2]'*[0:length(x)-1]);
+ex = ones(1,size(theta,1))*cos(theta);
+
+else
+%Sax excitation
+[ex,fs] = wavread('Sax2.wav');
+ex = resample(ex,8000,fs);
+fs = 8000;
+r = length(x)/length(ex);
+
+% Since sax is longer, we stretch E,A
+t = [1:160:size(xmat,2)*160];
+ti = [1:160*r:size(xmat,2)*160];
+E = interp1(t,E,ti,'nearest');
+A = interp1(t,A,ti,'nearest');
+end
+
+% buffer the excitation (with tapering)
+exmat =  buffer(ex,320,160);
+winmat = hanning(320)*ones(1,size(exmat,2));
+exmat = exmat.*winmat;
+
+% Source - filter (convolve the pulsetrain with the filters)
+ymat = zeros(size(exmat));
+for i = 1:size(exmat,2),
+ymat(:,i) = filter(E(i),A(i,:),exmat(:,i));
+end
+ymat = real(ymat);
+
+% OLA
+y = ola(ymat,160);
+soundsc(y)
