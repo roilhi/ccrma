@@ -31,11 +31,11 @@ A large collection of audio files for your experimentation are located at  /usr/
 Matlab Setup
 ------------
 
-1. Launch Matlab
-2. Configure your Path:  Add the folder /usr/ccrma/courses/mir2013/Toolboxes to your local Matlab path (including all subfolders).
-3. Set the "Java Heap Memory" to 900 MB via : File>Preferences>General> Java Heap Memory
-This allows us to load large audio files and feature vectors into memory.  Click on "OK". Click Apply.
-4. Restart Matlab.
+1.  Launch Matlab
+2.  Configure your Path:  Add the folder /usr/ccrma/courses/mir2013/Toolboxes to your local Matlab path (including all subfolders).
+3.  Set the "Java Heap Memory" to 900 MB via : File > Preferences > General > Java Heap Memory.
+    This allows us to load large audio files and feature vectors into memory.  Click on "OK". Click Apply.
+4.  Restart Matlab.
 
 Why are the Paste / Save keys different?   Why does Paste default to Control-Y?  
 On Linux, Matlab defaults to using Emacs key bindings.  If you want Mac or Windows bindings, go:
@@ -52,11 +52,9 @@ Section 1
 
 Purpose: We'll experiment with the different features for known frames and see if we can build a basic understanding of what they are doing.  
   
-1.  Make sure to save all of your development code in an .m file.  You can build upon and reuse much of this code over the workshop.  
-   
-    To create a new .m file, chose:
+1.  Make sure to save all of your development code in an .m file.  You can build upon and reuse much of this code over the workshop.  To create a new .m file, choose:
 
-    * File> New > Script...
+    * File > New > Script...
     * Save the file as Lab1.m
 
     You can execute the code in Lab1.m  via any of the below options:
@@ -75,7 +73,7 @@ Purpose: We'll experiment with the different features for known frames and see i
 
 3.  Load the audio file simpleLoop.wav into Matlab, storing it in the variable x and sampling rate in fs. 
 
-       [x,fs]=wavread('/usr/ccrma/courses/mir2013/audio/simpleLoop.wav');
+        [x,fs] = wavread('/usr/ccrma/courses/mir2013/audio/simpleLoop.wav');
 
 4.  In this course, we will convert all stereo files to mono.  
     Include this code after your read in WAV files to automatically detect if a file is stereo and convert it to mono.
@@ -93,90 +91,88 @@ Purpose: We'll experiment with the different features for known frames and see i
 
     To stop listening to a long audio file, press Control-C.    Audio snippets less than ~8000 samples will often not play out Matlab.  (known bug on Linux machines)
 
-6. Run an onset detector to determine the approximate onsets in the audio file. 
+6.  Run an onset detector to determine the approximate onsets in the audio file. 
 
-    [onsets] = onset_times(x,fs);  % leighs onset detector with signal and  sample_rate as input
-    onsets=round(fs*onsets);    % convert onset times in seconds to to samples - round to nearest integer sample
-    numonsets = length(onsets);
+        [onsets] = onset_times(x,fs);  % leighs onset detector with signal and  sample_rate as input
+        onsets=round(fs*onsets);    % convert onset times in seconds to to samples - round to nearest integer sample
+        numonsets = length(onsets);
 
-For debugging, we have function which generates mixes of the original audio file and onset times.  This is demonstrated with `test_onsets.m`.
+    For debugging, we have function which generates mixes of the original audio file and onset times.  This is demonstrated with `test_onsets.m`.
 
-One of Matlab's greatest features is its rich and easy visualization functions.  Visualizing your data at every possible step in the algorithm development process not only builds a practical understanding of the variables, parameters and results, but it greatly aids debugging. 
-  
-8.       Plot the audio file in a figure window. 
+    One of Matlab's greatest features is its rich and easy visualization functions.  Visualizing your data at every possible step in the algorithm development process not only builds a practical understanding of the variables, parameters and results, but it greatly aids debugging. 
+      
+8.  Plot the audio file in a figure window. 
 
-    plot(x)
+        plot(x)
 
-9.       Now, add a marker showing the position of each onset on top of the waveforms. 
+9.  Now, add a marker showing the position of each onset on top of the waveforms. 
 
-    plot(x); hold on; plot(onsets,0.2,'rx')
+        plot(x); hold on; plot(onsets,0.2,'rx')
 
 10.   Adding text markers to your plots can further aid in debugging or visualizing problems.  Label each onset with it's respective onset number with the following simple loop:
 
-    for i=1:numonsets
-        text(onsets(i),0.2,num2str(i));  % num2st converts an number to a string for display purposes
-    end
+        for i=1:numonsets
+            text(onsets(i),0.2,num2str(i));  % num2st converts an number to a string for display purposes
+        end
 
-Labeling the data is crucial.   Add a title and axis to the figures.  (ylabel, xlabel, title.)
+    Labeling the data is crucial.   Add a title and axis to the figures.  (ylabel, xlabel, title.)
 
-    xlabel('seconds')
-    ylabel('magnitude')
-    title('my onset plot')
-     
-11.  Now that we can view the various onsets, try out the onset detector and visualization on a variety of other audio examples located in /usr/ccrma/courses/mir2013/audio.   Continue to load the various audio files and run the onset detector - does it seem like it works well?    If not, yell at Leigh.
+        xlabel('seconds')
+        ylabel('magnitude')
+        title('my onset plot')
 
-Segmenting audio in Frames
-As we learned in lecture, it's common to chop up the audio into fixed-frames.  These frames are then further analyzed, processed, or feature extracted.  We're going to analyze the audio in 100 ms frames starting at each onset. 
+11. Now that we can view the various onsets, try out the onset detector and visualization on a variety of other audio examples located in /usr/ccrma/courses/mir2013/audio.   Continue to load the various audio files and run the onset detector - does it seem like it works well?    If not, yell at Leigh.
 
-12.   Create a loop which carves up the audio in fixed-size frames (100ms), starting at the onsets.
-13.   Inside of your loop, plot each frame, and play the audio for each frame. 
+    Segmenting audio in Frames
+    As we learned in lecture, it's common to chop up the audio into fixed-frames.  These frames are then further analyzed, processed, or feature extracted.  We're going to analyze the audio in 100 ms frames starting at each onset. 
 
-    % Loop to carve up audio into onset-based frames
-    frameSize = 0.100 *fs;        % sec
-    for i=1:numonsets
-        frames{i}= x(onsets(i):onsets(i)+frameSize);
-        figure(1);
-        plot(frames{i}); title(['frame ' num2str(i)]);   
-        sound(frames{i}  ,fs);
-        pause(0.5)
-    end
-     
-Feature extract your frames
+12. Create a loop which carves up the audio in fixed-size frames (100ms), starting at the onsets.
+13. Inside of your loop, plot each frame, and play the audio for each frame. 
 
-14.   Create a loop which extracts the Zero Crossing Rate for each frame, and stores it in an array.   
-Your loop will select 100ms (in samples, this value is =  fs * 0.1) , starting at the onsets, and obtain the number of zero crossings in that frame. 
-
-The command  `[z] = zcr(x)`  returns the number of zero crossings for a vector x.
-Don't forget to store the value of z in a feature array for each frame.
-
-    clear features
-
-    % Extract Zero Crossing Rate from all frames and store it in "features(i,1)"
-    for i=1:numonsets
-        features(i,1) = zcr(frames{i})
-    end
-        
-For simpleLoop.wav, you should now have a feature array of 5 x 1 - which is the 5 frames (one at each detected onset) and 1 feature (zcr) for each frame. 
+        % Loop to carve up audio into onset-based frames
+        frameSize = 0.100 *fs;        % sec
+        for i=1:numonsets
+            frames{i}= x(onsets(i):onsets(i)+frameSize);
+            figure(1);
+            plot(frames{i}); title(['frame ' num2str(i)]);   
+            sound(frames{i}  ,fs);
+            pause(0.5)
+        end
          
-Sort the audio file by its feature array. 
-Let's test out how well our features characterize the underlying audio signal. 
-To build intuition, we're going to sort the feature vector by it's zero crossing rate, from low value to highest value. 
+    Feature extract your frames
 
-15.   If we sort and re-play the audio that corresponds with these sorted frames, what do you think it will sound like?  (e.g., same order as the loop, reverse order of the loop, snares followed by kicks, quiet notes followed by loud notes, or ??? )   Pause and think about this. 
+14. Create a loop which extracts the Zero Crossing Rate for each frame, and stores it in an array.   Your loop will select 100ms (in samples, this value is =  fs * 0.1) , starting at the onsets, and obtain the number of zero crossings in that frame. 
 
-16.   Now, we're going to play these sorted audio frames, from lowest to highest.  (The pause command will be quite useful here, too.)  How does it sound?  Does it sort them how you expect them to be sorted? 
+    The command  `[z] = zcr(x)`  returns the number of zero crossings for a vector x.
+    Don't forget to store the value of z in a feature array for each frame.
 
-    [y,index] = sort(features);
+        clear features
+        % Extract Zero Crossing Rate from all frames and store it in "features(i,1)"
+        for i=1:numonsets
+            features(i,1) = zcr(frames{i})
+        end
+            
+    For simpleLoop.wav, you should now have a feature array of 5 x 1 - which is the 5 frames (one at each detected onset) and 1 feature (zcr) for each frame. 
+             
+    Sort the audio file by its feature array. 
+    Let's test out how well our features characterize the underlying audio signal. 
+    To build intuition, we're going to sort the feature vector by it's zero crossing rate, from low value to highest value. 
 
-    for i=1:numonsets
-        sound(frames{index(i)},fs)
-        figure(1); plot(frames{index(i)});title(i);
-        pause(0.5)
-    End
+15. If we sort and re-play the audio that corresponds with these sorted frames, what do you think it will sound like?  (e.g., same order as the loop, reverse order of the loop, snares followed by kicks, quiet notes followed by loud notes, or ??? )   Pause and think about this. 
 
-You'll notice how trivial this drum loop is - always use familiar and predictable audio files when you're developing your algorithms. 
+16. Now, we're going to play these sorted audio frames, from lowest to highest.  (The pause command will be quite useful here, too.)  How does it sound?  Does it sort them how you expect them to be sorted? 
 
-17.   Now that you have this file loading, playing , and sorting working, try this with out files, such as:
+        [y,index] = sort(features);
+
+        for i=1:numonsets
+            sound(frames{index(i)},fs)
+            figure(1); plot(frames{index(i)});title(i);
+            pause(0.5)
+        End
+
+    You'll notice how trivial this drum loop is - always use familiar and predictable audio files when you're developing your algorithms. 
+
+17. Now that you have this file loading, playing , and sorting working, try this with out files, such as:
 /usr/ccrma/courses/mir2013/audio/CongaGroove-mono.wav, and /usr/ccrma/courses/mir2013/audio/ 125BOUNC-mono.WAV.
 
 
