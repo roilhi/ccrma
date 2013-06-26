@@ -52,41 +52,46 @@ Section 1
 
 Purpose: We'll experiment with the different features for known frames and see if we can build a basic understanding of what they are doing.  
   
-1. Make sure to save all of your development code in an .m file.  You can build upon and reuse much of this code over the workshop.  
+1.  Make sure to save all of your development code in an .m file.  You can build upon and reuse much of this code over the workshop.  
    
-To create a new .m file, chose:
+    To create a new .m file, chose:
 
-* File> New > Script...
-* Save the file as Lab1.m
+    * File> New > Script...
+    * Save the file as Lab1.m
 
-You can execute the code in Lab1.m  via any of the below options:
+    You can execute the code in Lab1.m  via any of the below options:
 
-* Type Lab1.m in the command window
-* press F5 in the Editor to execute the current selected script.
-* You can execute 1 or more commands selected in the Editor window at a time.  Select the code and press F9.  Note the Command Window will update. 
+    * Type Lab1.m in the command window
+    * press F5 in the Editor to execute the current selected script.
+    * You can execute 1 or more commands selected in the Editor window at a time.  Select the code and press F9.  Note the Command Window will update. 
 
-2. Tab Completion. 
-Tab Completion works in Command Window and the Editor.   After you type a few letters, hit the Tab key and a popup will appear and show you all of the possible completions, including variable names and functions.    This prevents you to mistyping the names of variables - a big time (and aggravation) saver! 
- 
-For example, in the Command Line or Editor , try typing wavr   and then hitting Tab!    ("wavread" should appear)
+2.  Tab Completion. 
 
-3. Load the audio file simpleLoop.wav into Matlab, storing it in the variable x and sampling rate in fs. 
-[x,fs]=wavread('/usr/ccrma/courses/mir2013/audio/simpleLoop.wav');
+    Tab Completion works in Command Window and the Editor.
+    After you type a few letters, hit the Tab key and a popup will appear and show you all of the possible completions, including variable names and functions.
+    This prevents you to mistyping the names of variables - a big time (and aggravation) saver! 
+     
+    For example, in the Command Line or Editor , try typing `wavr`  and then hitting Tab!    ("wavread" should appear)
 
-4. In this course, we will convert all stereo files to mono.  Include this code after your read in WAV files to automatically detect if a file is stereo and convert it to mono.
+3.  Load the audio file simpleLoop.wav into Matlab, storing it in the variable x and sampling rate in fs. 
 
-    % MAKING MONO
-    % If your audio files (x) are stereo, here's how to make them mono:
-    if size(x,2) == 2
-        x= (x(:,1)+x(:,2) ) ./ max(abs(x(:,1)+x(:,2))) ;
-        disp('Making your file mono…');
-    end
+       [x,fs]=wavread('/usr/ccrma/courses/mir2013/audio/simpleLoop.wav');
 
-5. You can play the audio file by typing using typing
+4.  In this course, we will convert all stereo files to mono.  
+    Include this code after your read in WAV files to automatically detect if a file is stereo and convert it to mono.
 
-    sound(x,fs)
+        % MAKING MONO
+        % If your audio files (x) are stereo, here's how to make them mono:
+        if size(x,2) == 2
+            x= (x(:,1)+x(:,2) ) ./ max(abs(x(:,1)+x(:,2))) ;
+            disp('Making your file mono…');
+        end
 
-To stop listening to a long audio file, press Control-C.    Audio snippets less than ~8000 samples will often not play out Matlab.  (known bug on Linux machines)
+5.  You can play the audio file by typing using typing
+
+        sound(x,fs)
+
+    To stop listening to a long audio file, press Control-C.    Audio snippets less than ~8000 samples will often not play out Matlab.  (known bug on Linux machines)
 
 6. Run an onset detector to determine the approximate onsets in the audio file. 
 
@@ -141,10 +146,10 @@ Feature extract your frames
 14.   Create a loop which extracts the Zero Crossing Rate for each frame, and stores it in an array.   
 Your loop will select 100ms (in samples, this value is =  fs * 0.1) , starting at the onsets, and obtain the number of zero crossings in that frame. 
 
-The command   [z] = zcr(x)   returns the number of zero crossings for a vector x.
+The command  `[z] = zcr(x)`  returns the number of zero crossings for a vector x.
 Don't forget to store the value of z in a feature array for each frame.
 
-clear features
+    clear features
 
     % Extract Zero Crossing Rate from all frames and store it in "features(i,1)"
     for i=1:numonsets
