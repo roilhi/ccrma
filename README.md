@@ -15,17 +15,22 @@ To receive updates to the repository, from your newly created `ccrma` repository
 Lab 1 
 =====
 
-Basic feature extraction and classification 
+**Basic feature extraction and classification**
 
 Purpose: Introduce you to the practice of analyzing, segmenting, feature extracting, and applying basic classifications to audio files.  Our future labs will build upon this essential work - but will use more sophisticated training sets, features, and classifiers. 
 
 We'll first need to setup some additional Matlab folders, toolboxes, and scripts that we'll use later. 
 
-DIRECTORY
+Directory
+---------
 
 Course related code, toolboxes, and audio are stored at: /usr/ccrma/courses/mir2013
  
-MATLAB SETUP
+A large collection of audio files for your experimentation are located at  /usr/ccrma/courses/mir2013/audio
+
+Matlab Setup
+------------
+
 1. Launch Matlab
 2. Configure your Path:  Add the folder /usr/ccrma/courses/mir2013/Toolboxes to your local Matlab path (including all subfolders).
 3. Set the "Java Heap Memory" to 900 MB via : File>Preferences>General> Java Heap Memory
@@ -39,13 +44,8 @@ Switch the Editor/Debugger key bindings to "Windows".
 
 You can easily comment and uncomment code by hitting Cntr-R,  Cntrl-T. 
 
-MP3READ
+To read MP3 files into Matlab, we have a function called `mp3read`.  It is used just like `wavread`. 
 
-To read MP3 files into Matlab, we have a function called mp3read.  It is used just like wavread. 
-
-AUDIO FILES
-
-A large collection of audio files for your experimentation are located at  /usr/ccrma/courses/mir2013/audio
  
 SECTION 1
 ---------
