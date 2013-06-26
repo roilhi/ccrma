@@ -47,7 +47,7 @@ You can easily comment and uncomment code by hitting Cntr-R,  Cntrl-T.
 To read MP3 files into Matlab, we have a function called `mp3read`.  It is used just like `wavread`. 
 
  
-SECTION 1
+Section 1
 ---------
 
 Purpose: We'll experiment with the different features for known frames and see if we can build a basic understanding of what they are doing.  
@@ -55,63 +55,70 @@ Purpose: We'll experiment with the different features for known frames and see i
 1. Make sure to save all of your development code in an .m file.  You can build upon and reuse much of this code over the workshop.  
    
 To create a new .m file, chose:
-File> New > Script...
-Save the file as Lab1.m
-You can execute the code in Lab1.m  via any of the below options:
-·  Type Lab1.m in the command window
-Or…
-press F5 in the Editor to execute the current selected script.
-Or…
-·  You can execute 1 or more commands selected in the Editor window at a time.  Select the code and press F9.  Note the Command Window will update. 
 
-2.       Tab Completion. 
+* File> New > Script...
+* Save the file as Lab1.m
+
+You can execute the code in Lab1.m  via any of the below options:
+
+* Type Lab1.m in the command window
+* press F5 in the Editor to execute the current selected script.
+* You can execute 1 or more commands selected in the Editor window at a time.  Select the code and press F9.  Note the Command Window will update. 
+
+2. Tab Completion. 
 Tab Completion works in Command Window and the Editor.   After you type a few letters, hit the Tab key and a popup will appear and show you all of the possible completions, including variable names and functions.    This prevents you to mistyping the names of variables - a big time (and aggravation) saver! 
  
 For example, in the Command Line or Editor , try typing wavr   and then hitting Tab!    ("wavread" should appear)
 
-3.       Load the audio file simpleLoop.wav into Matlab, storing it in the variable x and sampling rate in fs. 
+3. Load the audio file simpleLoop.wav into Matlab, storing it in the variable x and sampling rate in fs. 
 [x,fs]=wavread('/usr/ccrma/courses/mir2013/audio/simpleLoop.wav');
 
-4.       In this course, we will convert all stereo files to mono.  Include this code after your read in WAV files to automatically detect if a file is stereo and convert it to mono.
+4. In this course, we will convert all stereo files to mono.  Include this code after your read in WAV files to automatically detect if a file is stereo and convert it to mono.
 
-% MAKING MONO
-% If your audio files (x) are stereo, here's how to make them mono:
-if size(x,2) == 2
-x= (x(:,1)+x(:,2) ) ./ max(abs(x(:,1)+x(:,2))) ;
-disp('Making your file mono…');
-end
- 
-5.       You can play the audio file by typing using typing
-sound(x,fs)
+    % MAKING MONO
+    % If your audio files (x) are stereo, here's how to make them mono:
+    if size(x,2) == 2
+        x= (x(:,1)+x(:,2) ) ./ max(abs(x(:,1)+x(:,2))) ;
+        disp('Making your file mono…');
+    end
+
+5. You can play the audio file by typing using typing
+
+    sound(x,fs)
 
 To stop listening to a long audio file, press Control-C.    Audio snippets less than ~8000 samples will often not play out Matlab.  (known bug on Linux machines)
 
-6.       Run an onset detector to determine the approximate onsets in the audio file. 
-[onsets] = onset_times(x,fs);  % leighs onset detector with signal and  sample_rate as input
-onsets=round(fs*onsets);    % convert onset times in seconds to to samples - round to nearest integer sample
-numonsets = length(onsets);
+6. Run an onset detector to determine the approximate onsets in the audio file. 
 
-For debugging, we have function which generates mixes of the original audio file and onset times.
-This is demonstrated with test_onsets.m
- 
- One of Matlab's greatest features is its rich and easy visualization functions.  Visualizing your data at every possible step in the algorithm development process not only builds a practical understanding of the variables, parameters and results, but it greatly aids debugging. 
+    [onsets] = onset_times(x,fs);  % leighs onset detector with signal and  sample_rate as input
+    onsets=round(fs*onsets);    % convert onset times in seconds to to samples - round to nearest integer sample
+    numonsets = length(onsets);
+
+For debugging, we have function which generates mixes of the original audio file and onset times.  This is demonstrated with `test_onsets.m`.
+
+One of Matlab's greatest features is its rich and easy visualization functions.  Visualizing your data at every possible step in the algorithm development process not only builds a practical understanding of the variables, parameters and results, but it greatly aids debugging. 
   
 8.       Plot the audio file in a figure window. 
-plot(x)
+
+    plot(x)
+
 9.       Now, add a marker showing the position of each onset on top of the waveforms. 
-plot(x); hold on; plot(onsets,0.2,'rx')
+
+    plot(x); hold on; plot(onsets,0.2,'rx')
 
 10.   Adding text markers to your plots can further aid in debugging or visualizing problems.  Label each onset with it's respective onset number with the following simple loop:
-for i=1:numonsets
-   text(onsets(i),0.2,num2str(i));  % num2st converts an number to a string for display purposes
-   end
-    
+
+    for i=1:numonsets
+        text(onsets(i),0.2,num2str(i));  % num2st converts an number to a string for display purposes
+    end
+
 Labeling the data is crucial.   Add a title and axis to the figures.  (ylabel, xlabel, title.)
-xlabel('seconds')
-ylabel('magnitude')
-title('my onset plot')
- 
-11.   Now that we can view the various onsets, try out the onset detector and visualization on a variety of other audio examples located in /usr/ccrma/courses/mir2013/audio.   Continue to load the various audio files and run the onset detector - does it seem like it works well?    If not, yell at Leigh.
+
+    xlabel('seconds')
+    ylabel('magnitude')
+    title('my onset plot')
+     
+11.  Now that we can view the various onsets, try out the onset detector and visualization on a variety of other audio examples located in /usr/ccrma/courses/mir2013/audio.   Continue to load the various audio files and run the onset detector - does it seem like it works well?    If not, yell at Leigh.
 
 Segmenting audio in Frames
 As we learned in lecture, it's common to chop up the audio into fixed-frames.  These frames are then further analyzed, processed, or feature extracted.  We're going to analyze the audio in 100 ms frames starting at each onset. 
@@ -119,54 +126,57 @@ As we learned in lecture, it's common to chop up the audio into fixed-frames.  T
 12.   Create a loop which carves up the audio in fixed-size frames (100ms), starting at the onsets.
 13.   Inside of your loop, plot each frame, and play the audio for each frame. 
 
-% Loop to carve up audio into onset-based frames
-frameSize = 0.100 *fs;        % sec
-for i=1:numonsets
-    frames{i}= x(onsets(i):onsets(i)+frameSize);
+    % Loop to carve up audio into onset-based frames
+    frameSize = 0.100 *fs;        % sec
+    for i=1:numonsets
+        frames{i}= x(onsets(i):onsets(i)+frameSize);
         figure(1);
-            plot(frames{i}); title(['frame ' num2str(i)]);   
-                sound(frames{i}  ,fs);
-                    pause(0.5)
-                    end
-                     
- Feature extract your frames
- 14.   Create a loop which extracts the Zero Crossing Rate for each frame, and stores it in an array.   
- Your loop will select 100ms (in samples, this value is =  fs * 0.1) , starting at the onsets, and obtain the number of zero crossings in that frame. 
-  
+        plot(frames{i}); title(['frame ' num2str(i)]);   
+        sound(frames{i}  ,fs);
+        pause(0.5)
+    end
+     
+Feature extract your frames
+
+14.   Create a loop which extracts the Zero Crossing Rate for each frame, and stores it in an array.   
+Your loop will select 100ms (in samples, this value is =  fs * 0.1) , starting at the onsets, and obtain the number of zero crossings in that frame. 
+
 The command   [z] = zcr(x)   returns the number of zero crossings for a vector x.
 Don't forget to store the value of z in a feature array for each frame.
 
 clear features
-% Extract Zero Crossing Rate from all frames and store it in "features(i,1)"
-for i=1:numonsets
-   features(i,1) = zcr(frames{i})
-   end
-    
-    For simpleLoop.wav, you should now have a feature array of 5 x 1 - which is the 5 frames (one at each detected onset) and 1 feature (zcr) for each frame. 
-     
- Sort the audio file by its feature array. 
- Let's test out how well our features characterize the underlying audio signal. 
- To build intuition, we're going to sort the feature vector by it's zero crossing rate, from low value to highest value. 
-  
+
+    % Extract Zero Crossing Rate from all frames and store it in "features(i,1)"
+    for i=1:numonsets
+        features(i,1) = zcr(frames{i})
+    end
+        
+For simpleLoop.wav, you should now have a feature array of 5 x 1 - which is the 5 frames (one at each detected onset) and 1 feature (zcr) for each frame. 
+         
+Sort the audio file by its feature array. 
+Let's test out how well our features characterize the underlying audio signal. 
+To build intuition, we're going to sort the feature vector by it's zero crossing rate, from low value to highest value. 
+
 15.   If we sort and re-play the audio that corresponds with these sorted frames, what do you think it will sound like?  (e.g., same order as the loop, reverse order of the loop, snares followed by kicks, quiet notes followed by loud notes, or ??? )   Pause and think about this. 
 
 16.   Now, we're going to play these sorted audio frames, from lowest to highest.  (The pause command will be quite useful here, too.)  How does it sound?  Does it sort them how you expect them to be sorted? 
 
- [y,index] = sort(features);
-  
-  for i=1:numonsets
-      sound(frames{index(i)},fs)
-          figure(1); plot(frames{index(i)});title(i);
-              pause(0.5)
-              End
-               
-               You'll notice how trivial this drum loop is - always use familiar and predictable audio files when you're developing your algorithms. 
-                
+    [y,index] = sort(features);
+
+    for i=1:numonsets
+        sound(frames{index(i)},fs)
+        figure(1); plot(frames{index(i)});title(i);
+        pause(0.5)
+    End
+
+You'll notice how trivial this drum loop is - always use familiar and predictable audio files when you're developing your algorithms. 
+
 17.   Now that you have this file loading, playing , and sorting working, try this with out files, such as:
 /usr/ccrma/courses/mir2013/audio/CongaGroove-mono.wav, and /usr/ccrma/courses/mir2013/audio/ 125BOUNC-mono.WAV.
- 
-  
+
+
 SECTION 2 - Spectral Features & k-NN
+------------------------------------
 
 PURPOSE
 My first audio classifier: introducing K-NN!  We can now appreciate why we need additional intelligence in our systems - heuristics can't very far in the world of complex audio signals.  We'll be using Netlab's implementation of the k-NN for our work here.  It proves be a straight-forward and easy to use implementation.  The steps and skills of working with one classifier will scale nicely to working with other, more complex classifiers. 
@@ -255,35 +265,36 @@ tr_targets = training target data
 
 Here's an example...
  
-labels=[[ones(10,1) zeros(10,1)]; [zeros(10,1) ones(10,1) ]];
+    labels=[[ones(10,1) zeros(10,1)]; [zeros(10,1) ones(10,1) ]];
 
 Which is an array of ones and zeros to correspond to the 10 snares and 10 kicks in our training sample set:
-labels=
-   1     0
-    1     0
-     1     0
-      1     0
-       1     0
-        1     0
-         1     0
-          1     0
-           1     0
-            1     0
-             0     1
-              0     1
-               0     1
-                0     1
-                 0     1
-                  0     1
-                   0     1
-                    0     1
-                     0     1
-                      0     1
-                       
-[trainingFeatures,mf,sf]=scale([featuresSnare; featuresKick]);
 
-model_snare = knn(5,2,1,trainingFeatures,labels);        
- 
+    labels=
+        1     0
+        1     0
+        1     0
+        1     0
+        1     0
+        1     0
+        1     0
+        1     0
+        1     0
+        1     0
+        0     1
+        0     1
+        0     1
+        0     1
+        0     1
+        0     1
+        0     1
+        0     1
+        0     1
+        0     1
+                       
+    [trainingFeatures,mf,sf]=scale([featuresSnare; featuresKick]);
+
+    model_snare = knn(5,2,1,trainingFeatures,labels);        
+     
 This k-NN model uses 5 features,  2 classes for output (the label), uses k-NN = 1, and takes in the feature data via a feature array called trainingFeatures.
 
 These labels indicate which sample in our feature data is a snare, vs. a non-snare.  The k-NN model uses this information to build a means of comparison and classification.  It is really important that you get these labels correct - because they are the crux of all future classifications that are made later on.  (Trust me, I've made many mistakes in this area - training models with incorrect label data.)
@@ -300,15 +311,16 @@ Some helpful commands:
 featuresScaled = rescale(features,mf,sf) ;   % This uses the previous calculated linear scaling parameters to adjust the incoming features to the same range.  
 
 EVALUTING WITH KNN
-[voting,model_output]=knnfwd(model_snare , featuresScaled )
+
+    [voting,model_output]=knnfwd(model_snare , featuresScaled )
 
 The  output voting gives you a breakdown of how many nearest neighbors were closest to the test feature vector.  
  
-The model_output provides a list of whether output is Class 1 or Class 2.
+The `model_output` provides a list of whether output is Class 1 or Class 2.
 
-output = zeros(size(model_output),2)
-output(find(model_output==1),1)=1
-output(find(model_output==2),2)=1
+    output = zeros(size(model_output),2)
+    output(find(model_output==1),1)=1
+    output(find(model_output==2),2)=1
 
 Now you can visually compare the output to trainlabels
  
@@ -327,7 +339,9 @@ To run a Matlab "cell" (multiline block of code),  press Control-Enter with the 
 The clear command re-initializes a variable.  To avoid confusion, you mind find it helpful to clear arrays and structures at the beginning of your scripts.
 
 Common Errors
->??? Index exceeds matrix dimensions.
+
+    >??? Index exceeds matrix dimensions.
+
 Are you trying to access, display, plot, or play past the end of the file / frame? 
 For example, if an audio file is 10,000 samples long, make sure that the index is not greater than this maximum value.   If the value is > than the length of your file, use an if statement to catch the problem.
 
