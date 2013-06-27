@@ -480,3 +480,150 @@ To achieve the first step (divide our training set into k disjoint subsets), use
      end
      disp(['cross validation error: ' num2str(mean(errors))])
      disp(['cross validation accuracy: ' num2str(1-mean(errors))])
+
+
+Lab 4
+=====
+
+Summary:
+1.  Separate sources.
+2.  Separate noisy sources.
+3.  Classify separated sources.
+
+Matlab Programming Tips
+*   Pressing the up and down arrows let you scroll through command history.
+*   A semicolon at the end of a line simply means ``suppress output''.
+*   Type `help <command>` for instant documentation. For example, `help wavread`, `help plot`, `help sound`. Use `help` liberally!
+
+
+Section 1: Source Separation
+----------------------------
+
+In Matlab: Select File > Set Path. 
+
+Select "Add with Subfolders". 
+
+Select `/usr/ccrma/courses/mir2011/lab3skt`.
+
+As in Lab 1, load the file, listen to it, and plot it.
+
+    [x, fs] = wavread('simpleLoop.wav');
+    sound(x, fs)
+    t = (0:length(x)-1)/fs;
+    plot(t, x)
+    xlabel('Time (seconds)')
+
+Compute and plot a short-time Fourier transform, i.e., the Fourier transform over consecutive frames of the signal.
+
+    frame_size = 0.100;
+    hop = 0.050;
+    X = parsesig(x, fs, frame_size, hop);
+    imagesc(abs(X(200:-1:1,:)))
+
+Type `help parsesig`, `help imagesc`, and `help abs` for more information.
+
+This step gives you some visual intuition about how sounds (might) overlap.
+
+Let's separate sources!
+
+    K = 2;
+    [y, W, H] = sourcesep(x, fs, K);
+
+Type `help sourcesep` for more information.
+
+Plot and listen to the separated signals.
+
+    plot(t, y)
+    xlabel('Time (seconds)')
+    legend('Signal 1', 'Signal 2')
+    sound(y(:,1), fs)
+    sound(y(:,2), fs)
+
+Feel free to replace `Signal 1` and `Signal 2` with `Kick` and `Snare` (depending upon which is which).   
+
+Plot the outputs from NMF.
+
+    figure
+    plot(W(1:200,:))
+    legend('Signal 1', 'Signal 2')
+    figure
+    plot(H')
+    legend('Signal 1', 'Signal 2')
+
+What do you observe from `W` and `H`? 
+
+Does it agree with the sounds you heard?
+
+
+Repeat the earlier steps for different audio files.
+
+*  `125BOUNC-mono.WAV`
+*  `58BPM.WAV` 
+*  `CongaGroove-mono.wav`
+*  `Cstrum chord_mono.wav`
+
+... and more.
+
+Experiment with different values for the number of sources, `K`. 
+
+Where does this separation method succeed? 
+
+Where does it fail?
+
+
+Section 2: Noise Robustness
+---------------------------
+
+Begin with `simpleLoop.wav`. Then try others.
+
+*  Add noise to the input signal, plot, and listen.
+
+    xn = x + 0.01*randn(length(x),1);
+    plot(t, xn)
+    sound(xn, fs)
+
+*  Separate, plot, and listen.
+
+    [yn, Wn, Hn] = sourcesep(xn, fs, K);
+    plot(t, yn)
+    sound(yn(:,1), fs)
+    sound(yn(:,2), fs)
+    
+How robust to noise is this separation method? 
+
+Compared to the noisy input signal, how much noise is left in the output signals? 
+
+Which output contains more noise? Why?
+
+
+Section 3: Classification
+-------------------------
+
+Follow the K-NN example in Lab 1, but classify the *separated* signals.
+
+*  As in Lab 1, extract features from each training sample in the kick and snare drum directories.
+*  Train a K-NN model using the kick and snare drum samples.
+
+    labels=[[ones(10,1) zeros(10,1)];
+            [zeros(10,1) ones(10,1)]];
+    model_snare = knn(5, 2, 1, trainingFeatures, labels);
+    [voting, model_output] = knnfwd(model_snare, featuresScaled)
+
+*  Extract features from the drum signals that you separated in Lab 4 Section 1. 
+
+Classify them using the K-NN model that you built.
+
+Does K-NN accurately classify the separated signals?
+
+Repeat for different numbers of separated signals (i.e., the parameter $K$ in NMF). 
+
+*  Overseparate the signal using $K = 20$ or more. For those separated components that are classified as snare, add them together using `sum}. The listen to the sum signal. Is it coherent, i.e., does it sound like a single separated drum?
+
+...and more!
+
+*  If you have another idea that you would like to try out, please ask me!
+*  Please collaborate with a partner. 
+
+Together, brainstorm your own problems, if you want!
+
+Good luck!
