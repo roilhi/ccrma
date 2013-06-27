@@ -15,7 +15,7 @@ To receive updates to the repository, from your newly created `ccrma` repository
 Lab 1 
 =====
 
-**Basic feature extraction and classification**
+**Basic Feature Extraction and Classification**
 
 Purpose: Introduce you to the practice of analyzing, segmenting, feature extracting, and applying basic classifications to audio files.  Our future labs will build upon this essential work - but will use more sophisticated training sets, features, and classifiers. 
 
@@ -36,14 +36,13 @@ Matlab Setup
 ------------
 
 1.  Launch Matlab
-2.  Configure your Path:  Add the folder /usr/ccrma/courses/mir2013/Toolboxes to your local Matlab path (including all subfolders).
+2.  Configure your Path:  Add the folder `/usr/ccrma/courses/mir2013/Toolboxes` to your local Matlab path (including all subfolders).
 3.  Set the "Java Heap Memory" to 900 MB via : File > Preferences > General > Java Heap Memory.
     This allows us to load large audio files and feature vectors into memory.  Click on "OK". Click Apply.
 4.  Restart Matlab.
 
 Why are the Paste / Save keys different?   Why does Paste default to Control-Y?  
-On Linux, Matlab defaults to using Emacs key bindings.  If you want Mac or Windows bindings, go:
-File menu > Preferences > Keyboard
+On Linux, Matlab defaults to using Emacs key bindings.  If you want Mac or Windows bindings, go: File menu > Preferences > Keyboard
 Switch the Editor/Debugger key bindings to "Windows".
 
 You can easily comment and uncomment code by hitting Cntr-R,  Cntrl-T. 
@@ -57,15 +56,13 @@ Section 1: Segmentation and Zero-Crossing Rate
 Purpose: We'll experiment with the different features for known frames and see if we can build a basic understanding of what they are doing.  
   
 1.  Make sure to save all of your development code in an .m file.  You can build upon and reuse much of this code over the workshop.  To create a new .m file, choose:
-
-        * File > New > Script...
-        * Save the file as Lab1.m
+    * File > New > Script...
+    * Save the file as Lab1.m
 
     You can execute the code in `Lab1.m` via any of the below options:
-
-        * Type Lab1.m in the command window
-        * press F5 in the Editor to execute the current selected script.
-        * You can execute 1 or more commands selected in the Editor window at a time.  Select the code and press F9.  Note the Command Window will update. 
+    * Type Lab1.m in the command window
+    * press F5 in the Editor to execute the current selected script.
+    * You can execute 1 or more commands selected in the Editor window at a time.  Select the code and press F9.  Note the Command Window will update. 
 
 2.  Tab Completion. 
 
@@ -125,7 +122,7 @@ Purpose: We'll experiment with the different features for known frames and see i
         ylabel('magnitude')
         title('my onset plot')
 
-11. Now that we can view the various onsets, try out the onset detector and visualization on a variety of other audio examples located in /usr/ccrma/courses/mir2013/audio.   Continue to load the various audio files and run the onset detector - does it seem like it works well?    If not, yell at Leigh.
+11. Now that we can view the various onsets, try out the onset detector and visualization on a variety of other audio examples located in `/usr/ccrma/courses/mir2013/audio`.   Continue to load the various audio files and run the onset detector - does it seem like it works well?    If not, yell at Leigh.
 
     Segmenting audio in Frames
     As we learned in lecture, it's common to chop up the audio into fixed-frames.  These frames are then further analyzed, processed, or feature extracted.  We're going to analyze the audio in 100 ms frames starting at each onset. 
@@ -392,7 +389,7 @@ Note that it's also important to multiple the signal by a window (e.g., Hamming 
 SECTION 2 MFCC
 --------------
 
-Load an audio file of your choosing from the audio folder on /usr/ccrma/courses/mir2012/audio
+Load an audio file of your choosing from the audio folder on `/usr/ccrma/courses/mir2012/audio`.
 Use this as an opportunity to explore this collection.
 
 BAG OF FRAMES
@@ -447,7 +444,7 @@ To achieve the first step (divide our training set into k disjoint subsets), use
     define a partition of the N observations into K disjoint subsets.
 
  You can type help crossvalind to look at all the other options. This code is also posted as a template in 
- /usr/ccrma/courses/mir2010/Toolboxes/crossValidation.m
+ `/usr/ccrma/courses/mir2010/Toolboxes/crossValidation.m`
 
      % This code is provided as a template for your cross-validation
      % computation. Replace the variables "features", "labels" with your own
