@@ -557,10 +557,10 @@ Section 1: Source Separation
 
 7.  Repeat the earlier steps for different audio files.
 
-    *  `125BOUNC-mono.WAV`
-    *  `58BPM.WAV` 
-    *  `CongaGroove-mono.wav`
-    *  `Cstrum chord_mono.wav`
+        *  `125BOUNC-mono.WAV`
+        *  `58BPM.WAV` 
+        *  `CongaGroove-mono.wav`
+        *  `Cstrum chord_mono.wav`
 
     ... and more.
 
