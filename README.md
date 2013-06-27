@@ -486,6 +486,7 @@ Lab 4
 =====
 
 Summary:
+
 1.  Separate sources.
 2.  Separate noisy sources.
 3.  Classify separated sources.
@@ -576,20 +577,20 @@ Section 2: Noise Robustness
 
 Begin with `simpleLoop.wav`. Then try others.
 
-*  Add noise to the input signal, plot, and listen.
+*   Add noise to the input signal, plot, and listen.
 
-    xn = x + 0.01*randn(length(x),1);
-    plot(t, xn)
-    sound(xn, fs)
+        xn = x + 0.01*randn(length(x),1);
+        plot(t, xn)
+        sound(xn, fs)
 
-*  Separate, plot, and listen.
+*   Separate, plot, and listen.
 
-    [yn, Wn, Hn] = sourcesep(xn, fs, K);
-    plot(t, yn)
-    sound(yn(:,1), fs)
-    sound(yn(:,2), fs)
-    
-How robust to noise is this separation method? 
+        [yn, Wn, Hn] = sourcesep(xn, fs, K);
+        plot(t, yn)
+        sound(yn(:,1), fs)
+        sound(yn(:,2), fs)
+        
+    How robust to noise is this separation method? 
 
 Compared to the noisy input signal, how much noise is left in the output signals? 
 
@@ -601,13 +602,13 @@ Section 3: Classification
 
 Follow the K-NN example in Lab 1, but classify the *separated* signals.
 
-*  As in Lab 1, extract features from each training sample in the kick and snare drum directories.
-*  Train a K-NN model using the kick and snare drum samples.
+*   As in Lab 1, extract features from each training sample in the kick and snare drum directories.
+*   Train a K-NN model using the kick and snare drum samples.
 
-    labels=[[ones(10,1) zeros(10,1)];
-            [zeros(10,1) ones(10,1)]];
-    model_snare = knn(5, 2, 1, trainingFeatures, labels);
-    [voting, model_output] = knnfwd(model_snare, featuresScaled)
+        labels=[[ones(10,1) zeros(10,1)];
+                [zeros(10,1) ones(10,1)]];
+        model_snare = knn(5, 2, 1, trainingFeatures, labels);
+        [voting, model_output] = knnfwd(model_snare, featuresScaled)
 
 *  Extract features from the drum signals that you separated in Lab 4 Section 1. 
 
