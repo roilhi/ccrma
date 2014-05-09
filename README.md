@@ -1,6 +1,8 @@
 ccrma
 =====
 
+Deprecated. See <http://github.com/stevetjoa/stanford-mir.git> for most recent repository.
+
 Supplementary files for the CCRMA Workshop on Music Information Retrieval at Stanford University.
 
 In your home directory, simply type to following to obtain a copy of the repository:
