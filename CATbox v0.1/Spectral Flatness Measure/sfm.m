@@ -12,7 +12,8 @@ end
 
 x = x-mean(x);
 %Pxx = psd(x,Nfft);
-Pxx = pburg(x,Nfft);
+Pxx = abs(fft(x,Nfft)); %Calculating Power spectrum via FFT
+Pxx = Pxx(2:Nfft/2); %Taking one part of the spectrum and avoiding the dc component
 N = length(Pxx);
 
 if PLT,
